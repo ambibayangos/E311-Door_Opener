@@ -106,5 +106,15 @@ uint32_t int2str(uint16_t number, uint8_t* buffer)
 		i++;
 	}
 	
+	
+	uint8_t* temp = buffer;
+	uint8_t idx = 0;
+	for(int j = i-1 ; j >= 0 ; j--)
+	{
+		buffer[idx] = temp[j];
+		idx++;
+	}
+	
+	
 	return i;
 }
