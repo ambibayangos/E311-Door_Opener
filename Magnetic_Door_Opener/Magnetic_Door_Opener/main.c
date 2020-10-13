@@ -40,10 +40,12 @@ int main(void)
 	UART_init(MYUBRR);
 	sei(); // enable global interupt 
 	
-	UART_transmit_string("Hi Welcome to the Proteus Demo\n");
+	uint16_t adc =  ADC_convert(_PC0);
+	UART_transmit_number(adc);
+	
     while (1) 
-    {
-		//uint16_t adc =  ADC_convert(_PC0);
+    {	
+		//UART_transmit_string("Hi Welcome to the Proteus Demo\n");
     }
 }
 

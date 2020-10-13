@@ -38,5 +38,32 @@ void UART_transmit_char(unsigned char data);
 void UART_transmit_string(char *str);
 
 
+/* 
+ * This function transmits an array of byte serially via UART
+ */
+void UART_transmit(uint8_t* byte_array, uint32_t byte_array_length);
+
+
+/* 
+ * This function transmits a byte serially via UART
+ */
+void uart_transmit_byte(uint8_t byte);
+
+
+/* 
+ * This function transmits a number via uart
+ */
+void UART_transmit_number(uint16_t data);
+
+
+/* This function takes in a 16 bit integer  
+ * and converts it into an array of integer which
+ * corresponds to its ascii encoding.
+ *
+ * e.g int a = 123
+ * becomes b[3] = {"1","2","3"} 
+ */
+uint32_t int2str(uint16_t number, uint8_t* buffer);
+
 
 #endif /* UART_H_ */
