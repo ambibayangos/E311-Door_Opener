@@ -7,12 +7,16 @@
 
 #include <avr/io.h>
 
+#include "Drivers/ADC.h"
+
 
 int main(void)
-{
-    /* Replace with your application code */
+{	
+	
+	ADC_init();
     while (1) 
     {
+		uint16_t adc =  ADC_convert(_PC0);
     }
 }
 
