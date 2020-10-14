@@ -18,6 +18,7 @@
 int pmw_arbiter = 1; // decides if the pwm should create rising or falling edge
 int period_count = 0; // counts "x" period before swithing into new duty cycle
 int duty_index = 0; // index of the pwm array(allow changing pwm duty cycle)
+int current_duty_cycle_is_50 = 0;
 
 /*
  * This ISR timer creates a PWM and starts the timer(3.2ms) used to measure coil current
@@ -45,8 +46,11 @@ ISR(TIMER1_COMPA_vect)
 		{
 			PORTD |=  (1<<DDD4) | (1<<DDD5); // set pwm pins for closing current gate drivers
 		}
-		
-		START_8bit_COUNTER0(); // start a 3.2ms timer on rising edge to initialize coil current sampling procedure
+		//start a 3.2ms timer on rising edge of 50% duty cycle to initialize coil current sampling procedure
+		if(current_duty_cycle_is_50) 
+		{
+			START_8bit_COUNTER0();
+		}  
 		OCR1A = PERIOD_50ms*duty[duty_index]; // changes duty cycle
 		pmw_arbiter = 0; // create a falling edge on next 16bit timer match 
 	}
@@ -55,6 +59,17 @@ ISR(TIMER1_COMPA_vect)
 	{	
 		period_count = 0; //reset period count
 		duty_index = ++duty_index%9; // cycles through pwm duty cycles repeatedly
+		
+		
+		if(duty[duty_index] == 0.5)
+		{
+			current_duty_cycle_is_50 = 1;
+		}
+		else
+		{			
+			current_duty_cycle_is_50 = 0;
+		}
+	
 	}
 	
 }

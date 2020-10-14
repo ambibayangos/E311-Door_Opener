@@ -82,9 +82,13 @@ void FSM_start(void)
 					//at 0.5 duty cycle set flag to get the door state
 					flag_set = 1;
 					}
-				
+					
+					if(Sample_Coil_Current)
+					{
+						
+					}
 			
-			break;	
+				break;	
 		
 		}
 		
