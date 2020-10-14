@@ -22,7 +22,7 @@ void FSM_start(void)
 	Current_FSM_state = Initialisation_State; // Initialize current state to Initialization state
 	Door_State = Uknown; // Door state is unknown when programme just started
 	Sample_Coil_Current = 0;
-	
+	int flag_set = 0;
 	while(1)
 	{	
 		
@@ -32,8 +32,11 @@ void FSM_start(void)
 				
 				
 				if(!half_Duty_Produced)
-				{
-					Duty_Cycle = 0.5; // initialize duty cycle to 50% for sensing
+				{	
+					 // initialize duty cycle to 50% for sensing
+					duty[0] = 0.5;duty[1] = 0.5;duty[2] = 0.5;duty[3] = 0.5;
+					duty[4] = 0.5;duty[5] = 0.5;duty[6] = 0.5;duty[7] = 0.5;duty[8] = 0.5;
+					Coil_Current_Polarity_State = Opening_Force_Current; // generate a opening force
 					START_16bit_COUNTER();
 					half_Duty_Produced = 1;
 				}
@@ -51,25 +54,33 @@ void FSM_start(void)
 						Current_FSM_state= 	WaitTouch_State;					
 					}
 					
-					else if (Door_State== Door_Opened)
+					else if (Door_State==Door_Opened)
 					{	
-						STOP_16bit_COUNTER(); // stops the pwm generator
-						// start a timer
-						while(1); // delay
-						START_16bit_COUNTER(); // change polarity
-						
-						// cycle thru pwm 0.5 to 0.9
-						//at 0.5 duty cycle set flag to get the door state
+						Current_FSM_state = Open_Door_State;
 					}
 
-					
-
-			
 			  }
 				
-			break;
+				break;
 			
-			case WaitTouch_State:
+			case Open_Door_State:
+					
+					if(!flag_set)
+					{
+					STOP_16bit_COUNTER(); // stops the pwm generator
+					Coil_Current_Polarity_State = Closing_Force_Current;
+					// initialize duty cycle to 50% for sensing
+					duty[0] = 0.5;duty[1] = 0.6;duty[2] = 0.7;duty[3] = 0.8;
+					duty[4] = 0.9;duty[5] = 0.5;duty[6] = 0.5;duty[7] = 0.5;duty[8] = 0.5;	
+					// start a timer
+					//while(1); // delay , whhile timer dint expire
+					START_16bit_COUNTER(); // change polarity
+					
+					// cycle thru pwm 0.5 to 0.9
+					//at 0.5 duty cycle set flag to get the door state
+					flag_set = 1;
+					}
+				
 			
 			break;	
 		

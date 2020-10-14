@@ -34,11 +34,19 @@ enum Door_States {
 	Door_Opened,
 	Uknown
 };
+
+
+enum Current_Polarity{
+	Opening_Force_Current,
+	Closing_Force_Current
+};
 	
 uint8_t  Current_FSM_state;
 uint8_t  Door_State;
-float Duty_Cycle;
+uint8_t Duty_Cycle;
 uint8_t Sample_Coil_Current;
+uint8_t Coil_Current_Polarity_State;
+float duty[9];
 
 /*
  *  This function represents the FSM that controls the current driver.
