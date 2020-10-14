@@ -1,4 +1,4 @@
-main.d main.o: .././main.c \
+Drivers/Controller.d Drivers/Controller.o: ../Drivers/Controller.c \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\sfr_defs.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\inttypes.h \
@@ -10,9 +10,8 @@ main.d main.o: .././main.c \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\version.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\fuse.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\lock.h \
- c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\interrupt.h \
- .././Drivers/ADC.h .././Drivers/COUNTERS.h .././Drivers/GPIO.h \
- .././Drivers/UART.h .././Drivers/Controller.h
+ ../Drivers/Controller.h ../Drivers/COUNTERS.h ../Drivers/ADC.h \
+ ../Drivers/UART.h
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h:
 
@@ -36,14 +35,10 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\lock.h:
 
-c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\interrupt.h:
+../Drivers/Controller.h:
 
-.././Drivers/ADC.h:
+../Drivers/COUNTERS.h:
 
-.././Drivers/COUNTERS.h:
+../Drivers/ADC.h:
 
-.././Drivers/GPIO.h:
-
-.././Drivers/UART.h:
-
-.././Drivers/Controller.h:
+../Drivers/UART.h:

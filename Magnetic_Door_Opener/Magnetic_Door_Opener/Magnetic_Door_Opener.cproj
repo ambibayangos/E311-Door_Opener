@@ -126,7 +126,13 @@
     <Compile Include="Drivers\ADC.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Drivers\COUNTER.c">
+    <Compile Include="Drivers\Controller.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Drivers\Controller.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Drivers\COUNTERS.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Drivers\COUNTERS.h">

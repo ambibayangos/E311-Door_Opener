@@ -32,21 +32,6 @@ void ADC_init(void)
  */
 uint16_t ADC_convert(uint8_t channel)
 {	
-	/*
-	// select channel to convert
-	ADMUX |= (1<<channel);
-	
-	// start conversion
-	ADCSRA |= (1<<ADSC); 
-	
-	// wait until conversion finishes
-	while((ADCSRA &(1<<ADIF)) != 0);
-	
-	// read the ADC result
-	uint16_t result = ADC;
-	
-	return result;
-	*/
 	
 	// Set the channel we wish to convert
 	ADMUX |= channel;

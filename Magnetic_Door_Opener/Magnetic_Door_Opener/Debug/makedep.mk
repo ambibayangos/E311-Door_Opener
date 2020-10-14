@@ -4,7 +4,9 @@
 
 Drivers\ADC.c
 
-Drivers\COUNTER.c
+Drivers\Controller.c
+
+Drivers\COUNTERS.c
 
 Drivers\GPIO.c
 

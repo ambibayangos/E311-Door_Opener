@@ -12,30 +12,36 @@
 #include "Drivers/COUNTERS.h"
 #include "Drivers/GPIO.h"
 #include "Drivers/UART.h"
+#include "Drivers/Controller.h"
+
 
 int c = 1;
 float duty[9] = {0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9};
 int count = 0;
 int  d_idx = 0;
+
+/*
+ * This ISR timer creates a PWM and starts the timer(3.2ms) used to measure coil current
+ *
+ */ 
 ISR(TIMER1_COMPA_vect)
-{
+{	
 	if(c == 0)
 	{
 		PORTD &= ~((1<<DDD2) | (1<<DDD3) | (1<<DDD4) | (1<<DDD5));
-		OCR1A = 38*(1-duty[d_idx]);
+		OCR1A = 38*(1-Duty_Cycle);
 		c = 1;
 		count++;
-		UART_transmit_number(duty[d_idx]*100);
-		UART_transmit_string("\n\r");
 	}
 	else if(c == 1)
 	{
 		PORTD |= (1<<DDD2) | (1<<DDD3) | (1<<DDD4) | (1<<DDD5);
-		OCR1A = 38*duty[d_idx];
+		START_8bit_COUNTER0();
+		OCR1A = 38*Duty_Cycle;
 		c = 0;
 	}
 	
-	if(count == 5)
+	if(count == 10)
 	{	
 		count = 0;
 		d_idx = (++d_idx)%9;
@@ -44,24 +50,27 @@ ISR(TIMER1_COMPA_vect)
 	
 }
 
+/*
+ * This ISR timer counts 3.2 ms to start sampling coil current
+ *it sets a flag to sample the current
+ *
+ */ 
+ISR(TIMER0_COMPA_vect)
+{	
+	Sample_Coil_Current = 1; // set flag to initialize current sampling
+	STOP_8bit_COUNTER0(); // stop timer0 to prevent samping at other times
+}
 
 int main(void)
 {	
 	
 	ADC_init();
 	COUNTER_16bit_init();
+	COUNTER_8bit_timer0_init();
 	GPIO_init();
 	UART_init(MYUBRR);
 	sei(); // enable global interupt 
-	
-	uint16_t adc =  ADC_convert(_PC0);
-	UART_transmit_number(adc);
-	UART_transmit_string("\n\r");
-	adc =  ADC_convert(_PC1);
-	UART_transmit_number(adc);
-	
-    while (1) 
-    {	
-    }
+		
+	FSM_start();
 }
 
