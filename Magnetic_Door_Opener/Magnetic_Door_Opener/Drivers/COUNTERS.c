@@ -89,3 +89,38 @@ void STOP_8bit_COUNTER0(void)
 		// Disconnect clk from timer (Stop the timer)
 		TCCR0B &= ~((1<<CS12) | (1<<CS11) | (1<<CS10));
 }
+
+/*
+ * This function initializes the 8 bit timer (Timer2/Counter2)
+ */ 
+void COUNTER_8bit_timer2_init(void)
+{
+	// Set to FAST-PWM mode where OCR1A is TOP value
+	TCCR1B |= (1<<WGM13) | (1<<WGM12); TCCR1A |= (1<<WGM11) | (1<<WGM10);
+	
+	//Set PWM frequency to 1ms
+	OCR1A = 11; 
+	
+	//Create a rising edge on compare match
+	TCCR1A |= (1<<COM1A1); TCCR1A &= ~(1<<COM1A0);
+}
+
+/*
+ * This function starts the 8 bit counter2 with a prescale of 256
+ */ 
+void START_8bit_COUNTER2(void)
+{	
+	// reset timer value
+	//TCNT1 = 0;
+	// Set prescaller to 256 and start the FAST PWM
+	TCCR1B |= (1<<CS12) | (1<<CS10); TCCR1B &= ~(1<<CS11);
+}
+
+/*
+ * This function stops the 8 bit counter2 
+ */ 
+void STOP_8bit_COUNTER2(void)
+{
+	// Disconnect the timer clock (stop FAST PWM generation)
+	TCCR2B &= ~((1<<CS22) | (1<<CS21) | (1<<CS20));
+}

@@ -21,7 +21,7 @@
  * This enum represents the state of the FSM
  */
 enum FSM_States {
-	Open_Door_State,
+	Generate_Closing_Force_State,
 	Close_Door_State,
 	WaitTouch_State,
 	Initialisation_State

@@ -23,10 +23,11 @@ void FSM_start(void)
 	Door_State = Uknown; // Door state is unknown when programme just started
 	Sample_Coil_Current = 0;
 	int flag_set = 0;
+	int fast_pwm_started = 0;
 	while(1)
 	{	
 		
-		//UART_transmit_number(Coil_Current_Polarity_State);
+		//UART_transmit_number(Door_State);
 		
 		switch(Current_FSM_state)
 		{
@@ -58,14 +59,14 @@ void FSM_start(void)
 					
 					else if (Door_State==Door_Opened)
 					{	
-						Current_FSM_state = Open_Door_State;
+						Current_FSM_state = Generate_Closing_Force_State;
 					}
 
 			  }
 				
 				break;
 			
-			case Open_Door_State:
+			case Generate_Closing_Force_State:
 					
 					if(!flag_set)
 					{
@@ -85,9 +86,37 @@ void FSM_start(void)
 					
 					if(Sample_Coil_Current)
 					{
+						Sample_Coil_Current = 0;
+						uint16_t adc = ADC_convert(_PC0);
+						Door_State = get_doorstate(adc); // decide if the door is open or not
+						
+						if (Door_State==Door_Closed)
+						{
+							//TODO: also stop pwm to stop checking
+							
+							Current_FSM_state= 	WaitTouch_State;
+						}
+						else if (Door_State==Door_Opened)
+						{
+							Current_FSM_state = Generate_Closing_Force_State;
+						}
 						
 					}
 			
+				break;
+				
+			case WaitTouch_State:
+				
+				if(!fast_pwm_started)
+				{
+					STOP_16bit_COUNTER();
+					COUNTER_8bit_timer2_init();
+					START_8bit_COUNTER2();
+					
+					// start the 8bit timer for the touch sensor	
+					fast_pwm_started = 1;
+				}
+				
 				break;	
 		
 		}
@@ -104,12 +133,14 @@ void FSM_start(void)
  */ 
 int get_doorstate(uint16_t adc)
 {
-	float value = adc*5/ADC_REF;
+	float value = (adc*5.0)/ADC_REF;
 	
-	value = value/SHUNT; //0.5 is placeholder for reverse math
+	value = value/SHUNT; // calculate current
+	
 	
 	if (value <= DOOR_THRESHOLD_CURRENT)//still placeholders for actual values
 	{	
+		//UART_transmit_number(77);
 		return Door_Closed; 
 	}
 	

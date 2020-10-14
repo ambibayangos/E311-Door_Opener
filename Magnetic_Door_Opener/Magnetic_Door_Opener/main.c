@@ -26,7 +26,7 @@ int current_duty_cycle_is_50 = 0;
  */ 
 ISR(TIMER1_COMPA_vect)
 {	
-	UART_transmit_number(Coil_Current_Polarity_State);
+	//UART_transmit_number(Door_State);
 		
 	if(pmw_arbiter == 0) // create a falling edge on pwm
 	{			
@@ -96,5 +96,7 @@ int main(void)
 	sei(); // enable global interupt 
 		
 	FSM_start();
+	
+	//START_8bit_COUNTER2();
 }
 

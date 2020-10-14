@@ -18,4 +18,9 @@ void GPIO_init(void)
 	
 	// Set all pins to High
 	PORTD = 0xFF; PORTC = 0xFF; PORTB = 0xFF;
+	
+	DDRC &= ~(1<<DDC0); // set PCO input pin
+	PORTC &= ~(1<<DDC0);
+	
+	PORTB &= ~(1<<DDB3);
 }
