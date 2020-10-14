@@ -26,6 +26,8 @@ void FSM_start(void)
 	while(1)
 	{	
 		
+		//UART_transmit_number(Coil_Current_Polarity_State);
+		
 		switch(Current_FSM_state)
 		{
 			case Initialisation_State:

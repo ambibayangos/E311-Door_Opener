@@ -15,6 +15,7 @@
 #define ADC_REF 1024 // ADC resolution 10 bits
 #define SHUNT 0.5 // The resistor value used to measure current in coil in ohms
 #define DOOR_THRESHOLD_CURRENT 0.8 // The current (amps) used to determine if the open/closed door state
+#define PERIOD_50ms 38 // represents a 50ms pwm period with system clock 0.8Mhz prescaled by 1024
 
 /*
  * This enum represents the state of the FSM

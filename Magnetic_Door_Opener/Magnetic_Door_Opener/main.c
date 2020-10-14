@@ -15,9 +15,9 @@
 #include "Drivers/Controller.h"
 
 
-int c = 1;
-int count = 0;
-int  d_idx = 0;
+int pmw_arbiter = 1; // decides if the pwm should create rising or falling edge
+int period_count = 0; // counts "x" period before swithing into new duty cycle
+int duty_index = 0; // index of the pwm array(allow changing pwm duty cycle)
 
 /*
  * This ISR timer creates a PWM and starts the timer(3.2ms) used to measure coil current
@@ -25,34 +25,36 @@ int  d_idx = 0;
  */ 
 ISR(TIMER1_COMPA_vect)
 {	
-	if(c == 0)
+	UART_transmit_number(Coil_Current_Polarity_State);
+		
+	if(pmw_arbiter == 0) // create a falling edge on pwm
 	{			
 		PORTD &= ~((1<<DDD2) | (1<<DDD3) | (1<<DDD4) | (1<<DDD5));
-		OCR1A = 38*(1-duty[d_idx]);
-		c = 1;
-		count++;
+		OCR1A = PERIOD_50ms*(1-duty[duty_index]); // changes duty cycle
+		pmw_arbiter = 1; // create rising edge on pwm on next 16 bit timer match
+		period_count++;
 	}
-	else if(c == 1)
+	else if(pmw_arbiter == 1) // create a rising edge on pwm
 	{	
 		
-		if(Coil_Current_Polarity_State == Opening_Force_Current)
+		if(Coil_Current_Polarity_State == Opening_Force_Current) 
 		{
-			PORTD |= (1<<DDD2) | (1<<DDD3);
+			PORTD |= (1<<DDD2) | (1<<DDD3); // set pwm pins for opening current gate drivers
 		}
-		else if(Coil_Current_Polarity_State == Closing_Force_Current)
+		else if(Coil_Current_Polarity_State == Closing_Force_Current) 
 		{
-			PORTD |=  (1<<DDD4) | (1<<DDD5);
+			PORTD |=  (1<<DDD4) | (1<<DDD5); // set pwm pins for closing current gate drivers
 		}
 		
-		START_8bit_COUNTER0();
-		OCR1A = 38*duty[d_idx];
-		c = 0;
+		START_8bit_COUNTER0(); // start a 3.2ms timer on rising edge to initialize coil current sampling procedure
+		OCR1A = PERIOD_50ms*duty[duty_index]; // changes duty cycle
+		pmw_arbiter = 0; // create a falling edge on next 16bit timer match 
 	}
 	
-	if(count == 10)
+	if(period_count == 10) // wait 10 period count before changing into new duty cycle
 	{	
-		count = 0;
-		 d_idx = ++d_idx%9;
+		period_count = 0; //reset period count
+		duty_index = ++duty_index%9; // cycles through pwm duty cycles repeatedly
 	}
 	
 }
