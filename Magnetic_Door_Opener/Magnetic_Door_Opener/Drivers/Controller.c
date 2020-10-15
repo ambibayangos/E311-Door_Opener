@@ -25,6 +25,7 @@ void FSM_start(void)
 	Sample_touch_circuit = 0;
 	int flag_set = 0;
 	int fast_pwm_started = 0;
+	int opening_force_routine_started = 0;
 	int sample_touch_flag = 0;
 	int first_time_touch_value = 0;
 	int second_time_touch_value = 0;
@@ -32,7 +33,7 @@ void FSM_start(void)
 	while(1)
 	{	
 		
-		UART_transmit_number(Current_FSM_state);
+		//UART_transmit_number(Current_FSM_state);
 		
 		switch(Current_FSM_state)
 		{
@@ -112,6 +113,7 @@ void FSM_start(void)
 				
 			case WaitTouch_State:
 				
+				
 				if(!fast_pwm_started)
 				{	
 					// stop pmw on the coil
@@ -172,9 +174,24 @@ void FSM_start(void)
 				
 			case Generate_Opening_Force_State:
 				
-				STOP_16bit_COUNTER1(); // turn off the fast pwm generator
 				
-				UART_transmit_number(666);
+				if(!opening_force_routine_started)
+				{	
+					COUNTER_8bit_timer2_init();
+					STOP_16bit_COUNTER1(); // turn off the fast pwm generator
+					
+					//STOP_8bit_COUNTER2(); // stops the pwm generator
+					Coil_Current_Polarity_State = Opening_Force_Current; // change polarity
+					// provide the duty cycles that will be cycled through
+					duty[0] = 0.1;duty[1] = 0.2;duty[2] = 0.3;duty[3] = 0.4;
+					duty[4] = 0.5;duty[5] = 0.6;duty[6] = 0.7;duty[7] = 0.8;duty[8] = 0.9;
+
+					START_8bit_COUNTER2(); 
+					// cycle thru pwm 0.5 to 0.9
+					//at 0.5 duty cycle set flag to get the door state
+					opening_force_routine_started = 1;
+				}
+				
 				
 				break;
 		

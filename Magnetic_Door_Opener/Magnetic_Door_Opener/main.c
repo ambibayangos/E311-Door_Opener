@@ -31,7 +31,7 @@ ISR(TIMER2_COMPA_vect)
 		
 	if(pmw_arbiter == 0) // create a falling edge on pwm
 	{			
-		PORTD &= ~((1<<DDD2) | (1<<DDD3) | (1<<DDD4) | (1<<DDD5));
+		PORTD &= ~((1<<DDD6) | (1<<DDD7) | (1<<DDD4) | (1<<DDD5));
 		OCR2A = PERIOD_50ms*(1-duty[duty_index]); // changes duty cycle
 		pmw_arbiter = 1; // create rising edge on pwm on next 16 bit timer match
 		period_count++;
@@ -40,11 +40,12 @@ ISR(TIMER2_COMPA_vect)
 	{	
 		
 		if(Coil_Current_Polarity_State == Opening_Force_Current) 
-		{
-			PORTD |= (1<<DDD2) | (1<<DDD3); // set pwm pins for opening current gate drivers
+		{	
+			UART_transmit_number(99);
+			PORTD |= (1<<DDD6) | (1<<DDD7); // set pwm pins for opening current gate drivers
 		}
 		else if(Coil_Current_Polarity_State == Closing_Force_Current) 
-		{
+		{	UART_transmit_number(88);
 			PORTD |=  (1<<DDD4) | (1<<DDD5); // set pwm pins for closing current gate drivers
 		}
 		//start a 3.2ms timer on rising edge of 50% duty cycle to initialize coil current sampling procedure
@@ -83,12 +84,12 @@ ISR(TIMER2_COMPA_vect)
 ISR(TIMER0_COMPA_vect)
 {	
 	Sample_Coil_Current = 1; // set flag to initialize current sampling
-	STOP_8bit_COUNTER0(); // stop timer0 to prevent samping at other times
+	STOP_8bit_COUNTER0(); // stop timer0 to prevent sampling coil current at other times
 }
 
 
 ISR(INT0_vect)
-{	
+{
 	if(fast_pwm_period_count == 1000) // wait 1 sec for before sampling the touch circuit again
 	{
 		Sample_touch_circuit = 1; // set flag to initialize the sampling process
