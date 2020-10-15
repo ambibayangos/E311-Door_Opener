@@ -13,25 +13,26 @@
 #include "Drivers/GPIO.h"
 #include "Drivers/UART.h"
 #include "Drivers/Controller.h"
+#include "Drivers/EXT_INTERRUPT.h"
 
 
 int pmw_arbiter = 1; // decides if the pwm should create rising or falling edge
 int period_count = 0; // counts "x" period before swithing into new duty cycle
 int duty_index = 0; // index of the pwm array(allow changing pwm duty cycle)
 int current_duty_cycle_is_50 = 0;
+int fast_pwm_period_count = 0;
 
 /*
  * This ISR timer creates a PWM and starts the timer(3.2ms) used to measure coil current
  *
  */ 
-ISR(TIMER1_COMPA_vect)
+ISR(TIMER2_COMPA_vect)
 {	
-	//UART_transmit_number(Door_State);
 		
 	if(pmw_arbiter == 0) // create a falling edge on pwm
 	{			
 		PORTD &= ~((1<<DDD2) | (1<<DDD3) | (1<<DDD4) | (1<<DDD5));
-		OCR1A = PERIOD_50ms*(1-duty[duty_index]); // changes duty cycle
+		OCR2A = PERIOD_50ms*(1-duty[duty_index]); // changes duty cycle
 		pmw_arbiter = 1; // create rising edge on pwm on next 16 bit timer match
 		period_count++;
 	}
@@ -51,7 +52,7 @@ ISR(TIMER1_COMPA_vect)
 		{
 			START_8bit_COUNTER0();
 		}  
-		OCR1A = PERIOD_50ms*duty[duty_index]; // changes duty cycle
+		OCR2A = PERIOD_50ms*duty[duty_index]; // changes duty cycle
 		pmw_arbiter = 0; // create a falling edge on next 16bit timer match 
 	}
 	
@@ -85,18 +86,32 @@ ISR(TIMER0_COMPA_vect)
 	STOP_8bit_COUNTER0(); // stop timer0 to prevent samping at other times
 }
 
+
+ISR(INT0_vect)
+{	
+	if(fast_pwm_period_count == 1000) // wait 1 sec for before sampling the touch circuit again
+	{
+		Sample_touch_circuit = 1; // set flag to initialize the sampling process
+		fast_pwm_period_count  = 0;
+	}
+	
+	fast_pwm_period_count++;
+}
+
+
 int main(void)
 {	
 	
 	ADC_init();
-	COUNTER_16bit_init();
+	COUNTER_8bit_timer2_init();
 	COUNTER_8bit_timer0_init();
+	COUNTER_16bit_timer1_init();
 	GPIO_init();
 	UART_init(MYUBRR);
+	INIT_EXTERNAL_ISR();
 	sei(); // enable global interupt 
 		
 	FSM_start();
-	
-	//START_8bit_COUNTER2();
+
 }
 

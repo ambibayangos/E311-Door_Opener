@@ -12,19 +12,16 @@
  * This function initializes the 16 bit timer in Atmega328P
  *
  */ 
-void COUNTER_16bit_init(void)
+void COUNTER_8bit_timer2_init(void)
 {
 	// Set to CTC mode
-	TCCR1B |= (1<<WGM12);
+	TCCR2A |= (1<<WGM21);TCCR2A &= ~(1<<TCCR2A); TCCR2B &= (1<<WGM22);
 	
 	//Enable ISR when count matches OCR1 value
-	TIMSK1 |= (1<<OCIE1A);
+	TIMSK2 |= (1<<OCIE2A);
 	
 	// Initial Value to count to
-	OCR1A = 1;
-	
-	// Set prescaller to 1024 and start counting
-	//TCCR1B |= (1<<CS12) | (1<<CS10); TCCR1B &= ~(1<<CS11);
+	OCR2A = 1;
 		 
 }
 
@@ -32,22 +29,22 @@ void COUNTER_16bit_init(void)
  * This function starts the 16 bit counter with a prescale of 1024
  */ 
 
-void START_16bit_COUNTER(void)
+void START_8bit_COUNTER2(void)
 {		
 		// Resets counter value to zero
-		TCNT1 = 0;
+		TCNT2 = 0;
 		// Set prescaller to 1024 and start counting
-		TCCR1B |= (1<<CS12) | (1<<CS10); TCCR1B &= ~(1<<CS11);
+		TCCR2B |= (1<<CS22) | (1<<CS21) | (1<<CS20);
 }
 
 
 /*
  * This function stops the 16 bit counter 
  */ 
-void STOP_16bit_COUNTER(void)
-{
+void STOP_8bit_COUNTER2(void)
+{		
 		// Disconnect clk from timer (Stop the timer)
-		TCCR1B &= ~((1<<CS12) | (1<<CS11) | (1<<CS10));
+		TCCR2B &= ~((1<<CS12) | (1<<CS11) | (1<<CS10));
 }
 
 
@@ -90,37 +87,39 @@ void STOP_8bit_COUNTER0(void)
 		TCCR0B &= ~((1<<CS12) | (1<<CS11) | (1<<CS10));
 }
 
+
 /*
  * This function initializes the 8 bit timer (Timer2/Counter2)
  */ 
-void COUNTER_8bit_timer2_init(void)
+void COUNTER_16bit_timer1_init(void)
 {
-	// Set to FAST-PWM mode where OCR1A is TOP value
-	TCCR1B |= (1<<WGM13) | (1<<WGM12); TCCR1A |= (1<<WGM11) | (1<<WGM10);
-	
-	//Set PWM frequency to 1ms
-	OCR1A = 11; 
-	
-	//Create a rising edge on compare match
-	TCCR1A |= (1<<COM1A1); TCCR1A &= ~(1<<COM1A0);
+// Set FAST-PWM mode
+TCCR1A |= (1<<WGM11) | (1<<WGM10); TCCR1B |= (1<<WGM13) | (1<<WGM12);
+
+// Set PWM period to 1ms
+OCR1A = 5;
+
+//Set inverinting
+TCCR1A |= (1<<COM1A0);
+
 }
 
 /*
  * This function starts the 8 bit counter2 with a prescale of 256
  */ 
-void START_8bit_COUNTER2(void)
+void START_16bit_COUNTER1(void)
 {	
-	// reset timer value
-	//TCNT1 = 0;
-	// Set prescaller to 256 and start the FAST PWM
-	TCCR1B |= (1<<CS12) | (1<<CS10); TCCR1B &= ~(1<<CS11);
+	// Reset timer value to zero
+	TCNT1 = 0;
+	// Set prescaller to 64 and start timer
+	TCCR1B |= (1<<CS11) | (1<<CS10); TCCR1B &= ~(1<<CS12);
 }
 
 /*
  * This function stops the 8 bit counter2 
  */ 
-void STOP_8bit_COUNTER2(void)
+void STOP_16bit_COUNTER1(void)
 {
 	// Disconnect the timer clock (stop FAST PWM generation)
-	TCCR2B &= ~((1<<CS22) | (1<<CS21) | (1<<CS20));
+	TCCR1B &= ~((1<<CS22) | (1<<CS21) | (1<<CS20));
 }

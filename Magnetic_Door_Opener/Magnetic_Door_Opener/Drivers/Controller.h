@@ -21,10 +21,10 @@
  * This enum represents the state of the FSM
  */
 enum FSM_States {
-	Generate_Closing_Force_State,
-	Close_Door_State,
-	WaitTouch_State,
-	Initialisation_State
+	Generate_Closing_Force_State = 1,
+	Generate_Opening_Force_State = 2,
+	WaitTouch_State = 3,
+	Initialisation_State = 4
 	};
 	
 /*
@@ -47,6 +47,7 @@ uint8_t  Door_State;
 uint8_t Duty_Cycle;
 uint8_t Sample_Coil_Current;
 uint8_t Coil_Current_Polarity_State;
+uint8_t Sample_touch_circuit;
 float duty[9];
 
 /*
