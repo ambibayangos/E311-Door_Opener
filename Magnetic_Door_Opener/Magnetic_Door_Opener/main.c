@@ -89,7 +89,6 @@ ISR(TIMER0_COMPA_vect)
 
 ISR(INT0_vect)
 {	
-	
 	if(fast_pwm_period_count == 1000) // wait 1 sec for before sampling the touch circuit again
 	{
 		Sample_touch_circuit = 1; // set flag to initialize the sampling process
@@ -125,5 +124,7 @@ int main(void)
 	
 	// Start and loop the programme
 	FSM_start();
+		
+
 }
 

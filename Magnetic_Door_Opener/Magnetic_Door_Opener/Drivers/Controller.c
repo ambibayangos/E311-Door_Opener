@@ -11,7 +11,7 @@
 #include "COUNTERS.h"
 #include "ADC.h"
 #include "UART.h"
-
+#include "ADC.h"
 /*
  *  This function represents the FSM that controls the current driver 
  *  as
@@ -34,9 +34,8 @@ void FSM_start(void)
 	
 	while(1)
 	{	
-		UART_transmit_number(99);
-	
 		
+
 		switch(Current_FSM_state)
 		{
 			case Initialisation_State:
@@ -76,7 +75,6 @@ void FSM_start(void)
 			
 			case Generate_Closing_Force_State:
 					
-					//UART_transmit_number(99);
 					
 					if(!closing_force_routine_initialized)
 					{
@@ -177,7 +175,6 @@ void FSM_start(void)
 								
 				if(!opening_force_routine_initialized)
 				{	
-					
 					// turn off the fast pwm generator
 					STOP_16bit_COUNTER1(); 
 					// Configures the 16bit timer to be a 60 sec timer
@@ -188,13 +185,11 @@ void FSM_start(void)
 					// provide the duty cycles that will be cycled through (Duty = 0.1 to 0.9)
 					duty[0] = 0.1;duty[1] = 0.2;duty[2] = 0.3;duty[3] = 0.4;
 					duty[4] = 0.5;duty[5] = 0.6;duty[6] = 0.7;duty[7] = 0.8;duty[8] = 0.9;
-					COUNTER_8bit_timer2_init(); // remove later
 					// restart pwm generation on the coil
 					START_8bit_COUNTER2(); 
 					// initialize "Generate_Opening_Force_State" state once
 					opening_force_routine_initialized = 1;
 				}
-				
 				
 				if(Sample_Coil_Current)
 				{
@@ -203,31 +198,24 @@ void FSM_start(void)
 					uint16_t adc_opening_current = ADC_convert(_PC0);
 					Door_State = get_doorstate(adc_opening_current); // decide if the door is open or not
 					
-					UART_transmit_number(adc_opening_current);
-							
-				
 					if (Door_State==Door_Opened)
 					{	
 						
 						//Move to "Generate_Closing_Force_State" state to provide closing force
-						//Current_FSM_state = Generate_Closing_Force_State;
+						Current_FSM_state = Generate_Closing_Force_State;
 						// Enables the "Generate_Closing_Force_State" state to re-initialize
 						closing_force_routine_initialized = 0;
 					}
 					
 				}
-				
-							
+			
 				break;
-		
 		}
 		
 				
 	}
 	
 }
-
-int hhh = 0;
 
 /*
  *  this function gets door state
@@ -238,12 +226,16 @@ int get_doorstate(uint16_t adc)
 	float value = (adc*5.0)/ADC_REF;
 	
 	value = value/SHUNT; // calculate current
-
 	
 	if (value >= DOOR_THRESHOLD_CURRENT)//still placeholders for actual values
 	{	
+		UART_transmit_number(55);
 		return Door_Opened; 
 	}
+	else
+	{	
+		UART_transmit_number(66);
+		return Door_Closed; 
+	}
 
-	return Door_Closed; 
 }

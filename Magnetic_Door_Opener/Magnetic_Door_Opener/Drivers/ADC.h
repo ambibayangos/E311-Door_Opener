@@ -24,8 +24,8 @@ uint16_t ADC_convert(uint8_t channel);
 
 
 enum CHANNEL{
-	_PC0,
-	_PC1,
+	_PC0 = 0,
+	_PC1 = 1,
 };
 
 

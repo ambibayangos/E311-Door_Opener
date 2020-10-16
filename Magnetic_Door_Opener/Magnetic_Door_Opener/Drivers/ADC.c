@@ -33,8 +33,14 @@ void ADC_init(void)
 uint16_t ADC_convert(uint8_t channel)
 {	
 	
-	// Set the channel we wish to convert
-	ADMUX |= channel;
+	if(channel == _PC0)
+	{
+		ADMUX &= ~((1<<MUX3)|(1<<MUX2)|(1<<MUX1)|(1<<MUX0));
+	}
+	else if(channel == _PC1)
+	{
+		ADMUX &= ~((1<<MUX3)|(1<<MUX2)|(1<<MUX1)); 	ADMUX |= (1<<MUX0);
+	}
 	
 	// Start the conversion
 	ADCSRA |= (1 << ADSC);
