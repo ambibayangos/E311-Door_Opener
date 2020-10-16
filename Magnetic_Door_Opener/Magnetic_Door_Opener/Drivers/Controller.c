@@ -34,7 +34,7 @@ void FSM_start(void)
 	
 	while(1)
 	{	
-		UART_transmit_number(88);
+		UART_transmit_number(99);
 	
 		
 		switch(Current_FSM_state)

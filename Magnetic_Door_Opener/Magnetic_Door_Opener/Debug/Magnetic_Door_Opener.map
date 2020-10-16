@@ -808,23 +808,23 @@ END GROUP
  .debug_frame   0x00000194       0xfc Drivers/UART.o
  .debug_frame   0x00000290      0x11c main.o
 
-.debug_str      0x00000000      0x957
+.debug_str      0x00000000      0x8e1
  *(.debug_str)
  .debug_str     0x00000000      0x208 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega328p/avr5/crtatmega328p.o
  .debug_str     0x00000208      0x18e Drivers/ADC.o
                                 0x1c2 (size before relaxing)
- .debug_str     0x00000396      0x3de Drivers/Controller.o
-                                0x513 (size before relaxing)
- .debug_str     0x00000774       0x71 Drivers/COUNTERS.o
+ .debug_str     0x00000396      0x368 Drivers/Controller.o
+                                0x504 (size before relaxing)
+ .debug_str     0x000006fe       0x71 Drivers/COUNTERS.o
                                 0x2cc (size before relaxing)
- .debug_str     0x000007e5       0x2d Drivers/EXT_INTERRUPT.o
+ .debug_str     0x0000076f       0x2d Drivers/EXT_INTERRUPT.o
                                 0x1ae (size before relaxing)
- .debug_str     0x00000812       0x1c Drivers/GPIO.o
+ .debug_str     0x0000079c       0x1c Drivers/GPIO.o
                                 0x19d (size before relaxing)
- .debug_str     0x0000082e       0xa4 Drivers/UART.o
+ .debug_str     0x000007b8       0xa4 Drivers/UART.o
                                 0x25d (size before relaxing)
- .debug_str     0x000008d2       0x85 main.o
-                                0x3ef (size before relaxing)
+ .debug_str     0x0000085c       0x85 main.o
+                                0x3e0 (size before relaxing)
 
 .debug_loc      0x00000000      0x7be
  *(.debug_loc)
