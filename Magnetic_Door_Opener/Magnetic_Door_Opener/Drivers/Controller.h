@@ -31,9 +31,9 @@ enum FSM_States {
  * This enum represents the state of the door (opened or closed)
  */
 enum Door_States {
-	Door_Closed,
-	Door_Opened,
-	Uknown
+	Door_Closed = 1,
+	Door_Opened = 2,
+	Uknown = 3
 };
 
 
@@ -48,6 +48,9 @@ uint8_t Duty_Cycle;
 uint8_t Sample_Coil_Current;
 uint8_t Coil_Current_Polarity_State;
 uint8_t Sample_touch_circuit;
+int closing_force_routine_initialized;
+int wait_touch_routine_initialized;
+int opening_force_routine_initialized;
 float duty[9];
 
 /*

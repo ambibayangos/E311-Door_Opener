@@ -22,5 +22,7 @@ void GPIO_init(void)
 	DDRC &= ~(1<<DDC0); // set PCO input pin
 	PORTC &= ~(1<<DDC0);
 	
-	PORTB &= ~(1<<DDB3);
+	DDRD &= ~(1<<DDD2); // set PD2 as input pin
+	
+	DDRC &= ~(1<<DDC1); // set touch sensor pin to input (adc input)
 }

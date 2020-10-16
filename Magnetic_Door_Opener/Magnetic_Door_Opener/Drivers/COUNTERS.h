@@ -61,6 +61,21 @@ void START_16bit_COUNTER1(void);
  */ 
 void STOP_16bit_COUNTER1(void);
 
+/*
+ * This function initializes the 16 bit timer (Timer1/Counter1) to timeout after 60 seconds
+ */ 
+void OPENING_CURRENT_TIMER_config(void);
+
+/*
+ * This function this function starts a 60 second timer
+ */ 
+void START_OPENING_CURRENT_TIMER(void);
+
+/*
+ * This function stops the 60 second timer "OPENING_CURRENT_TIMER"
+ */ 
+void STOP_OPENING_CURRENT_TIMER(void);
+
 
 
 #endif /* COUNTERS_H_ */
