@@ -103,11 +103,11 @@ ISR(TIMER1_COMPA_vect)
 	/* Set FMS to wait touch state after 60 seconds of providing a opening force
 	 but the door is not opened ( wait for another touch)
 	 */
-	//Current_FSM_state = WaitTouch_State;
+	Current_FSM_state = WaitTouch_State;
 	// Enables the "WaitTouch_State" to re-initialize
-	//wait_touch_routine_initialized = 0;
+	wait_touch_routine_initialized = 0;
 	// Stop the 60 second timer
-	//STOP_OPENING_CURRENT_TIMER();
+	STOP_OPENING_CURRENT_TIMER();
 }
 
 int main(void)
@@ -124,7 +124,7 @@ int main(void)
 	
 	// Start and loop the programme
 	FSM_start();
-		
-
+	
+	//UART_transmit_string("HEllO THERE");
 }
 

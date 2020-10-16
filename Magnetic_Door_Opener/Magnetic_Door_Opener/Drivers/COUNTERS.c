@@ -99,8 +99,11 @@ TCCR1A |= (1<<WGM11) | (1<<WGM10); TCCR1B |= (1<<WGM13) | (1<<WGM12);
 // Set PWM period to 1ms
 OCR1A = 5;
 
+// Disable Intrrupt
+TIMSK1 &= ~(1<<OCIE1A);
+
 //Set inverinting
-TCCR1A |= (1<<COM1A0);
+TCCR1A |= (1<<COM1A0);  TCCR1A &= ~(1<<COM1A1);
 
 }
 
@@ -126,7 +129,7 @@ void STOP_16bit_COUNTER1(void)
 
 
 /*
- * This function initializes the 16 bit timer (Timer1/Counter1) to timeout after 60 seconds
+ * This function initializes the 16 bit timer (Timer1/Counter1) to timeout after 60 seconds (this timer is the 16bit timer)
  */ 
 void OPENING_CURRENT_TIMER_config(void)
 {	
@@ -134,14 +137,14 @@ void OPENING_CURRENT_TIMER_config(void)
 	TCCR1A &= ~((1<<WGM10) | (1<<WGM11)); TCCR1B &= ~(1<<WGM13); TCCR1B |= (1<<WGM12);
 	
 	// Set timeout to be 60 sec
-	OCR1A = 46875;
+	OCR1A = 46874;
 	
 	// Trigger ISR when timer is up (Timer matches OCR1A value)
 	TIMSK1 |= (1<<OCIE1A);
 }
 
 /*
- * This function this function starts a 60 second timer
+ * This function this function starts a 60 second timer (this timer is the 16bit timer)
  */ 
 void START_OPENING_CURRENT_TIMER(void)
 {	
@@ -150,12 +153,10 @@ void START_OPENING_CURRENT_TIMER(void)
 }
 
 /*
- * This function stops the 60 second timer "OPENING_CURRENT_TIMER"
+ * This function stops the 60 second timer "OPENING_CURRENT_TIMER" (this timer is the 16bit timer)
  */ 
 void STOP_OPENING_CURRENT_TIMER(void)
 {
 	// Disconnect the timer clock (stop FAST PWM generation)
-	TCCR1B &= ~((1<<CS22) | (1<<CS21) | (1<<CS20));
-	
-	UART_transmit_number(77);
+	TCCR1B &= ~((1<<CS12) | (1<<CS11) | (1<<CS10));
 }

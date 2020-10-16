@@ -42,11 +42,11 @@ enum Current_Polarity{
 	Closing_Force_Current
 };
 	
-uint8_t  Current_FSM_state;
-uint8_t  Door_State;
+enum FSM_States Current_FSM_state;
+enum Door_States  Door_State;
+enum Current_Polarity Coil_Current_Polarity_State;
 uint8_t Duty_Cycle;
 uint8_t Sample_Coil_Current;
-uint8_t Coil_Current_Polarity_State;
 uint8_t Sample_touch_circuit;
 int closing_force_routine_initialized;
 int wait_touch_routine_initialized;

@@ -34,13 +34,16 @@ void FSM_start(void)
 	
 	while(1)
 	{	
-		
+		UART_transmit_number(Current_FSM_state);
+		UART_transmit_string("\n\r");
+		UART_transmit_string("\n\r");
+			
 
 		switch(Current_FSM_state)
 		{
 			case Initialisation_State:
 					
-				
+				UART_transmit_number(99);
 				if(!half_Duty_Produced)
 				{	
 					 // initialize duty cycle to 50% for sensing
@@ -200,7 +203,6 @@ void FSM_start(void)
 					
 					if (Door_State==Door_Opened)
 					{	
-						
 						//Move to "Generate_Closing_Force_State" state to provide closing force
 						Current_FSM_state = Generate_Closing_Force_State;
 						// Enables the "Generate_Closing_Force_State" state to re-initialize
@@ -209,6 +211,9 @@ void FSM_start(void)
 					
 				}
 			
+				break;
+			default:
+				Current_FSM_state = Initialisation_State;
 				break;
 		}
 		
@@ -229,12 +234,10 @@ int get_doorstate(uint16_t adc)
 	
 	if (value >= DOOR_THRESHOLD_CURRENT)//still placeholders for actual values
 	{	
-		UART_transmit_number(55);
 		return Door_Opened; 
 	}
 	else
 	{	
-		UART_transmit_number(66);
 		return Door_Closed; 
 	}
 
