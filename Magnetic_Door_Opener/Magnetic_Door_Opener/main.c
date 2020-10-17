@@ -22,6 +22,8 @@ int duty_index = 0; // index of the pwm array(allow changing pwm duty cycle)
 int current_duty_cycle_is_50 = 0;
 int fast_pwm_period_count = 0;
 
+int count = 0;
+
 /*
  * This ISR timer creates a PWM and starts the timer(3.2ms) used to measure coil current
  *
@@ -41,6 +43,7 @@ ISR(TIMER2_COMPA_vect)
 		
 		if(Coil_Current_Polarity_State == Opening_Force_Current) 
 		{	
+			count++;
 			PORTD |= (1<<DDD6) | (1<<DDD7); // set pwm pins for opening current gate drivers
 		}
 		else if(Coil_Current_Polarity_State == Closing_Force_Current) 
@@ -73,6 +76,13 @@ ISR(TIMER2_COMPA_vect)
 	
 	}
 	
+	if(count == 100)
+	{
+		Current_FSM_state = WaitTouch_State;
+		wait_touch_routine_initialized = 0;
+		count = 0;
+	}
+	
 }
 
 /*
@@ -100,6 +110,7 @@ ISR(INT0_vect)
 
 ISR(TIMER1_COMPA_vect)
 {	
+	//UART_transmit_char("----------------> 60 sec up \n\r");
 	/* Set FMS to wait touch state after 60 seconds of providing a opening force
 	 but the door is not opened ( wait for another touch)
 	 */

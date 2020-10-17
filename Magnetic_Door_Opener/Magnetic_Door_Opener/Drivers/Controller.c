@@ -30,8 +30,6 @@ void FSM_start(void)
 	int first_time_touch_value = 0;
 	int second_time_touch_value = 0;
 	
-	int ccc = 0;
-	
 	while(1)
 	{	
 		UART_transmit_number(Current_FSM_state);
@@ -43,7 +41,7 @@ void FSM_start(void)
 		{
 			case Initialisation_State:
 					
-				UART_transmit_number(99);
+				UART_transmit_number(77);
 				if(!half_Duty_Produced)
 				{	
 					 // initialize duty cycle to 50% for sensing
@@ -62,7 +60,7 @@ void FSM_start(void)
 					
 					if (Door_State==Door_Closed)
 					{	
-						// Move to "WaitTouch_State" state 							
+						// Move to "WaitTouch_State" state 				
 						Current_FSM_state= 	WaitTouch_State;					
 					}
 					
@@ -178,12 +176,12 @@ void FSM_start(void)
 								
 				if(!opening_force_routine_initialized)
 				{	
-					// turn off the fast pwm generator
+					// turn off the fast pwm generator (wait touch pwm)
 					STOP_16bit_COUNTER1(); 
 					// Configures the 16bit timer to be a 60 sec timer
-					OPENING_CURRENT_TIMER_config();
+					//OPENING_CURRENT_TIMER_config();
 					// start a 60 sec timer (time frame for the door opening process)
-					START_OPENING_CURRENT_TIMER();
+					//START_OPENING_CURRENT_TIMER();
 					Coil_Current_Polarity_State = Opening_Force_Current; // change polarity of current
 					// provide the duty cycles that will be cycled through (Duty = 0.1 to 0.9)
 					duty[0] = 0.1;duty[1] = 0.2;duty[2] = 0.3;duty[3] = 0.4;

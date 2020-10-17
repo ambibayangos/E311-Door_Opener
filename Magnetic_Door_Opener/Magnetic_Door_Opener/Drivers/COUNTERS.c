@@ -45,6 +45,10 @@ void STOP_8bit_COUNTER2(void)
 {		
 		// Disconnect clk from timer (Stop the timer)
 		TCCR2B &= ~((1<<CS12) | (1<<CS11) | (1<<CS10));
+		
+		// turn off all coil pwm
+		PORTD &= ~((1<<DDD6) | (1<<DDD7) | (1<<DDD4) | (1<<DDD5));
+		
 }
 
 
@@ -137,7 +141,7 @@ void OPENING_CURRENT_TIMER_config(void)
 	TCCR1A &= ~((1<<WGM10) | (1<<WGM11)); TCCR1B &= ~(1<<WGM13); TCCR1B |= (1<<WGM12);
 	
 	// Set timeout to be 60 sec
-	OCR1A = 46874;
+	OCR1A = 10000;
 	
 	// Trigger ISR when timer is up (Timer matches OCR1A value)
 	TIMSK1 |= (1<<OCIE1A);
