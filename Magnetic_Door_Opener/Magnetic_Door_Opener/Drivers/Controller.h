@@ -54,6 +54,7 @@ uint8_t Sample_touch_circuit;
 int closing_force_routine_initialized;
 int wait_touch_routine_initialized;
 int opening_force_routine_initialized;
+volatile int pmw_delay_flag;
 float duty[9];
 
 /*

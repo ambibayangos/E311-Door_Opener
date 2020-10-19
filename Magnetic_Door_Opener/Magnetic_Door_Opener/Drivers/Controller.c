@@ -26,21 +26,23 @@ void FSM_start(void)
 	closing_force_routine_initialized = 0;
 	wait_touch_routine_initialized = 0;
 	opening_force_routine_initialized = 0;
+	pmw_delay_flag = 1;
 	int sample_touch_flag = 0;
 	int first_time_touch_value = 0;
 	int second_time_touch_value = 0;
+
+
 	
 	while(1)
 	{	
 		UART_transmit_number(Current_FSM_state);
 		UART_transmit_string("\n\r");
 		UART_transmit_string("\n\r");
-			
+	
 		switch(Current_FSM_state)
 		{
 			case Initialisation_State:
 					
-				UART_transmit_number(77);
 				if(!half_Duty_Produced)
 				{	
 					 // initialize duty cycle to 50% for sensing
@@ -78,40 +80,47 @@ void FSM_start(void)
 					
 					if(!closing_force_routine_initialized)
 					{
-					STOP_8bit_COUNTER2(); // stops the coil pwm generator
-					Coil_Current_Polarity_State = Closing_Force_Current;
-					// initialize duty cycle to 50% for sensing
-					duty[0] = 0.5;duty[1] = 0.6;duty[2] = 0.7;duty[3] = 0.8;
-					duty[4] = 0.9;duty[5] = 0.5;duty[6] = 0.5;duty[7] = 0.5;duty[8] = 0.5;	
-					//TODO -------------------------------------------> start a timer
-					//PWM_DELAY_init();
-					// ----------------------------------------------->delay , whhile timer dint expire
-					// START_PWM_DELAY();
-					// Do not start 
-					//while(1)
-					//{
-					//};
-					START_8bit_COUNTER2(); // restart the coil pwm generator
-					
-					//  Initialize "Generate_Closing_Force_State" state once
-					closing_force_routine_initialized = 1;
+						STOP_8bit_COUNTER2(); // stops the coil pwm generator
+						Coil_Current_Polarity_State = Closing_Force_Current;
+						//initialize duty cycle to 50% for sensing
+						duty[0] = 0.5;duty[1] = 0.6;duty[2] = 0.7;duty[3] = 0.8;
+						duty[4] = 0.9;duty[5] = 0.5;duty[6] = 0.5;duty[7] = 0.5;duty[8] = 0.5;
+						// Start initilize timer to provide 3 sec delay
+						PWM_DELAY_init();
+						// start 3 sec delay timer
+						START_PWM_DELAY();
+						// enable 30 sec block
+						pmw_delay_flag = 1;
+						// do not provide closing force until 30 elapse
+						while (pmw_delay_flag);
+						//if flag = 1 then wait
+
+						//UART_transmit_number(pwm_delay_flag*100);
+						// restart/start the coil pwm generator
+						START_8bit_COUNTER2();
+							
+						//  Initialize "Generate_Closing_Force_State" state once
+						closing_force_routine_initialized = 1;
 					}
-					
+						
+						
 					if(Sample_Coil_Current)
 					{
 						Sample_Coil_Current = 0;
 						uint16_t adc_closing_current = ADC_convert(_PC1);
 						Door_State = get_doorstate(adc_closing_current); // decide if the door is open or not
-						
+							
 						if (Door_State==Door_Closed)
 						{
-							// Move to "WaitTouch_State" state				
+							// Move to "WaitTouch_State" state
 							Current_FSM_state= 	WaitTouch_State;
 							// Enables the "WaitTouch_State" to re-initialize
 							wait_touch_routine_initialized = 0;
 						}
-						
+							
 					}
+							
+					
 			
 				break;
 				

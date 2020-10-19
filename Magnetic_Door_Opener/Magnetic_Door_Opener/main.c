@@ -111,16 +111,12 @@ ISR(INT0_vect)
 
 ISR(TIMER1_COMPA_vect)
 {	
-	//UART_transmit_char("----------------> 60 sec up \n\r");
-	/* Set FMS to wait touch state after 60 seconds of providing a opening force
-	 but the door is not opened ( wait for another touch)
-	 */
-	//Current_FSM_state = WaitTouch_State;
-	// Enables the "WaitTouch_State" to re-initialize
-	//wait_touch_routine_initialized = 0;
-	// Stop the 60 second timer
-	//STOP_OPENING_CURRENT_TIMER();
+	// signal generate closing force
+	pmw_delay_flag = 0; 
+	// stop the delay timer
+	STOP_PWM_DELAY();
 }
+
 
 int main(void)
 {	

@@ -137,14 +137,15 @@ void STOP_16bit_COUNTER1(void)
  */ 
 void PWM_DELAY_init(void)
 {	
+	
 	// Set to CTC mode
 	TCCR1A &= ~((1<<WGM10) | (1<<WGM11)); TCCR1B &= ~(1<<WGM13); TCCR1B |= (1<<WGM12);
 	
-	// Set timeout to be 60 sec
-	OCR1A = 10000;
-	
 	// Trigger ISR when timer is up (Timer matches OCR1A value)
 	TIMSK1 |= (1<<OCIE1A);
+	
+	// Set timeout to be 30 sec
+	OCR1A = 10000;//23436;
 }
 
 /*
@@ -152,8 +153,10 @@ void PWM_DELAY_init(void)
  */ 
 void START_PWM_DELAY(void)
 {	
-	// Set prescaller to 64
-	TCCR1B |= (1<<CS11) | (1<<CS10); TCCR1B &= (1<<CS12);
+	// reset timer value
+	TCNT1 = 0;
+	// Set prescaller to 1024
+	TCCR1B |= (1<<CS12) | (1<<CS10); TCCR1B &= ~(1<<CS11);
 }
 
 /*
