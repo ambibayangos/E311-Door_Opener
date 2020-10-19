@@ -16,6 +16,9 @@
 #define SHUNT 0.5 // The resistor value used to measure current in coil in ohms
 #define DOOR_THRESHOLD_CURRENT 0.8 // The current (amps) used to determine if the open/closed door state
 #define PERIOD_50ms 38 // represents a 50ms pwm period with system clock 0.8Mhz prescaled by 1024
+#define DOOR_TOUCHED_VOLTAGE 977 //	represents the digital value of the touch sensor voltage(4.86V) when "touch" is detected
+								   
+											
 
 /*
  * This enum represents the state of the FSM
@@ -58,7 +61,5 @@ float duty[9];
  *  When this function is called , the controller begins working.
  */ 
 void FSM_start(void);
-
-
 
 #endif /* CONTROLLER_H_ */

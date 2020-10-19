@@ -36,7 +36,6 @@ void FSM_start(void)
 		UART_transmit_string("\n\r");
 		UART_transmit_string("\n\r");
 			
-
 		switch(Current_FSM_state)
 		{
 			case Initialisation_State:
@@ -48,11 +47,11 @@ void FSM_start(void)
 					duty[0] = 0.5;duty[1] = 0.5;duty[2] = 0.5;duty[3] = 0.5;
 					duty[4] = 0.5;duty[5] = 0.5;duty[6] = 0.5;duty[7] = 0.5;duty[8] = 0.5;
 					Coil_Current_Polarity_State = Opening_Force_Current; // generate a opening force
-					START_8bit_COUNTER2();
+					START_8bit_COUNTER2(); // STARTS THE PWM
 					half_Duty_Produced = 1;
 				}
 				
-				if(Sample_Coil_Current)
+				if(Sample_Coil_Current)  // sample coil at 50% duty cycle
 				{	
 					Sample_Coil_Current = 0;
 					uint16_t adc = ADC_convert(_PC0);
@@ -85,7 +84,13 @@ void FSM_start(void)
 					duty[0] = 0.5;duty[1] = 0.6;duty[2] = 0.7;duty[3] = 0.8;
 					duty[4] = 0.9;duty[5] = 0.5;duty[6] = 0.5;duty[7] = 0.5;duty[8] = 0.5;	
 					//TODO -------------------------------------------> start a timer
+					//PWM_DELAY_init();
 					// ----------------------------------------------->delay , whhile timer dint expire
+					// START_PWM_DELAY();
+					// Do not start 
+					//while(1)
+					//{
+					//};
 					START_8bit_COUNTER2(); // restart the coil pwm generator
 					
 					//  Initialize "Generate_Closing_Force_State" state once
@@ -95,7 +100,7 @@ void FSM_start(void)
 					if(Sample_Coil_Current)
 					{
 						Sample_Coil_Current = 0;
-						uint16_t adc_closing_current = ADC_convert(_PC0);
+						uint16_t adc_closing_current = ADC_convert(_PC1);
 						Door_State = get_doorstate(adc_closing_current); // decide if the door is open or not
 						
 						if (Door_State==Door_Closed)
@@ -128,12 +133,12 @@ void FSM_start(void)
 				if(Sample_touch_circuit) // Sample touch circuit at falling edge of 1Hz pwm
 				{	
 					Sample_touch_circuit = 0;
-					uint16_t touch_adc = ADC_convert(_PC1); // sample the voltage at the touch sensor
+					uint16_t touch_adc = ADC_convert(_PC2); // sample the voltage at the touch sensor
 					
 					if(sample_touch_flag)
 					{
-						uint16_t value_prev = ADC_convert(_PC1);
-						if(value_prev >= 977)
+						uint16_t value_prev = ADC_convert(_PC2); // sample the voltage at the touch sensor
+						if(value_prev >= DOOR_TOUCHED_VOLTAGE)
 						{
 							first_time_touch_value = 0; // door not touched
 						}
@@ -146,8 +151,8 @@ void FSM_start(void)
 					}
 					else
 					{
-						uint16_t value_current = ADC_convert(_PC1);
-						if(value_current >= 977)
+						uint16_t value_current = ADC_convert(_PC2); // sample the voltage at the touch sensor
+						if(value_current >= DOOR_TOUCHED_VOLTAGE)
 						{	
 							
 							second_time_touch_value = 0; // door not touched
@@ -201,7 +206,7 @@ void FSM_start(void)
 					
 					if (Door_State==Door_Opened)
 					{	
-						//Move to "Generate_Closing_Force_State" state to provide closing force
+						// Move to "Generate_Closing_Force_State" state to provide closing force
 						Current_FSM_state = Generate_Closing_Force_State;
 						// Enables the "Generate_Closing_Force_State" state to re-initialize
 						closing_force_routine_initialized = 0;

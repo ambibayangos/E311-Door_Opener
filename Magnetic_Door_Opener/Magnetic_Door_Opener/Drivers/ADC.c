@@ -35,17 +35,21 @@ uint16_t ADC_convert(uint8_t channel)
 	
 	if(channel == _PC0)
 	{
-		ADMUX &= ~((1<<MUX3)|(1<<MUX2)|(1<<MUX1)|(1<<MUX0));
+		ADMUX &= ~((1<<MUX3)|(1<<MUX2)|(1<<MUX1)|(1<<MUX0)); // sample to PC0 (coil voltage - current polarity is opening force)
 	}
 	else if(channel == _PC1)
 	{
-		ADMUX &= ~((1<<MUX3)|(1<<MUX2)|(1<<MUX1)); 	ADMUX |= (1<<MUX0);
+		ADMUX &= ~((1<<MUX3)|(1<<MUX2)|(1<<MUX1)); 	ADMUX |= (1<<MUX0);  // sample to PC1 (coil voltage - current polarity is closing force)
+	}
+	else if(channel == _PC2)
+	{
+		ADMUX |= (1<<MUX1); ADMUX &= ~((1<<MUX0) | (1<<MUX2) | (1<<MUX3));  // sample to PC2 (touch sensor output pin)
 	}
 	
 	// Start the conversion
 	ADCSRA |= (1 << ADSC);
 	
-	// Wait for the conversion to finsih
+	// Wait for the conversion to finish
 	while ((ADCSRA & (1 << ADIF)) == 0);
 	
 	// Read out the ADC counts

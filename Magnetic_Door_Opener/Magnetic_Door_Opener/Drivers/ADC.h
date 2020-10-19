@@ -24,8 +24,9 @@ uint16_t ADC_convert(uint8_t channel);
 
 
 enum CHANNEL{
-	_PC0 = 0,
-	_PC1 = 1,
+	_PC0 = 0,  // switch adc channel to sample the coil voltage when current is opening polarity
+	_PC1 = 1,  // switch adc channel to sample the coil voltage when current is closing polarity
+	_PC2 = 2   // switch adc channel to sample the touch sensor output
 };
 
 

@@ -135,7 +135,7 @@ void STOP_16bit_COUNTER1(void)
 /*
  * This function initializes the 16 bit timer (Timer1/Counter1) to timeout after 60 seconds (this timer is the 16bit timer)
  */ 
-void OPENING_CURRENT_TIMER_config(void)
+void PWM_DELAY_init(void)
 {	
 	// Set to CTC mode
 	TCCR1A &= ~((1<<WGM10) | (1<<WGM11)); TCCR1B &= ~(1<<WGM13); TCCR1B |= (1<<WGM12);
@@ -150,16 +150,16 @@ void OPENING_CURRENT_TIMER_config(void)
 /*
  * This function this function starts a 60 second timer (this timer is the 16bit timer)
  */ 
-void START_OPENING_CURRENT_TIMER(void)
+void START_PWM_DELAY(void)
 {	
-	// Set prescaller to 1024
-	TCCR1B |= (1<<CS12) | (1<<CS10); TCCR1B &= (1<<CS11);
+	// Set prescaller to 64
+	TCCR1B |= (1<<CS11) | (1<<CS10); TCCR1B &= (1<<CS12);
 }
 
 /*
  * This function stops the 60 second timer "OPENING_CURRENT_TIMER" (this timer is the 16bit timer)
  */ 
-void STOP_OPENING_CURRENT_TIMER(void)
+void STOP_PWM_DELAY(void)
 {
 	// Disconnect the timer clock (stop FAST PWM generation)
 	TCCR1B &= ~((1<<CS12) | (1<<CS11) | (1<<CS10));
