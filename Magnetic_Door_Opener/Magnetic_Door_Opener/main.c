@@ -50,11 +50,7 @@ ISR(TIMER2_COMPA_vect)
 		{	
 			PORTD |=  (1<<DDD4) | (1<<DDD5); // set pwm pins for closing current gate drivers
 		}
-		//start a 3.2ms timer on rising edge of 50% duty cycle to initialize coil current sampling procedure
-		if(current_duty_cycle_is_50) 
-		{
-			START_8bit_COUNTER0();
-		}  
+
 		OCR2A = PERIOD_50ms*duty[duty_index]; // changes duty cycle
 		pmw_arbiter = 0; // create a falling edge on next 16bit timer match 
 	}
@@ -67,11 +63,13 @@ ISR(TIMER2_COMPA_vect)
 		
 		if(duty[duty_index] == 0.5)
 		{
-			current_duty_cycle_is_50 = 1;
+		 // Enable external isr on PD3
+		 EIMSK |= (1<<INT1);
 		}
 		else
 		{			
-			current_duty_cycle_is_50 = 0;
+		 // Disable external isr on PD3
+		  EIMSK &= ~(1<<INT1);
 		}
 	
 	}
@@ -92,6 +90,9 @@ ISR(TIMER2_COMPA_vect)
 ISR(TIMER0_COMPA_vect)
 {	
 		Sample_Coil_Current = 1; // set flag to initialize current sampling
+		int adc = ADC_convert(_PC0);
+		UART_transmit_number(adc);
+		UART_transmit_string("\n\r");
 		STOP_8bit_COUNTER0(); // stop timer0 to prevent sampling coil current at other times	
 }
 
@@ -106,6 +107,14 @@ ISR(INT0_vect)
 		
 	fast_pwm_period_count++;	
 }
+
+
+ISR(INT1_vect)
+{	
+	// start a 3.2 ms timer
+	START_8bit_COUNTER0();
+}
+
 
 
 

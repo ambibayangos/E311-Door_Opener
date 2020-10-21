@@ -27,5 +27,7 @@ void GPIO_init(void)
 	DDRC &= ~(1<<DDC1); // set PC1 as input pin to sample voltage across coil
 	DDRC &= ~(1<<DDC2); // set PC2 as input pin to sample voltage at touch sensor
 	
+	
 	DDRD &= ~(1<<DDD2); // set PD2 as input pin to detect falling edge on fast pwm
+	DDRD &= ~(1<<DDD3); // set PD3 as input pin to detect rising edge on coil pwm
 }

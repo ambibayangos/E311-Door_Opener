@@ -21,7 +21,7 @@ void COUNTER_8bit_timer2_init(void)
 	TIMSK2 |= (1<<OCIE2A);
 	
 	// Initial Value to count to
-	OCR2A = 1;
+	OCR2A = 10;
 		 
 }
 
@@ -65,21 +65,21 @@ void COUNTER_8bit_timer0_init(void)
 	TIMSK0 |= (1<<OCIE0A);
 	
 	// Initial Value to count to
-	OCR0A = 10;
+	OCR0A = 1;
 	
 	
 }
 
 /*
- * This function starts the 16 bit counter with a prescale of 1024
+ * This function starts the 8 bit counter with a prescale of 1024
  */ 
 
 void START_8bit_COUNTER0(void)
 {		
 		// Resets counter value to zero
 		TCNT0 = 0;
-		// Set prescaller to 1024 and start counting
-		TCCR0B |= (1<<CS12); TCCR0B &= ~((1<<CS10) |(1<<CS11));
+		// Set prescaller to 256 and start counting
+		TCCR0B |= (1<<CS02); TCCR0B &= ~((1<<CS01) |(1<<CS00));
 }
 
 /*

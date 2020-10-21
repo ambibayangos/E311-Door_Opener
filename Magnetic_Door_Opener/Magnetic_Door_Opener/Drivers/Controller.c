@@ -35,9 +35,9 @@ void FSM_start(void)
 	
 	while(1)
 	{	
-		UART_transmit_number(Current_FSM_state);
-		UART_transmit_string("\n\r");
-		UART_transmit_string("\n\r");
+		//UART_transmit_number(Current_FSM_state);
+		//UART_transmit_string("\n\r");
+		//UART_transmit_string("\n\r");
 	
 		switch(Current_FSM_state)
 		{
@@ -93,9 +93,6 @@ void FSM_start(void)
 						pmw_delay_flag = 1;
 						// do not provide closing force until 30 elapse
 						while (pmw_delay_flag);
-						//if flag = 1 then wait
-
-						//UART_transmit_number(pwm_delay_flag*100);
 						// restart/start the coil pwm generator
 						START_8bit_COUNTER2();
 							
@@ -242,9 +239,9 @@ int get_doorstate(uint16_t adc)
 {
 	float value = (adc*5.0)/ADC_REF;
 	
-	value = (value/DOOR_SENSING_CIRCUIT_GAIN)/SHUNT; // calculate current
+	value = (value/DOOR_SENSING_CIRCUIT_GAIN)/SHUNT; // calculate coil current
 	
-	if (value >= DOOR_THRESHOLD_CURRENT)//still placeholders for actual values
+	if (value >= DOOR_THRESHOLD_CURRENT)
 	{	
 		return Door_Opened; 
 	}
