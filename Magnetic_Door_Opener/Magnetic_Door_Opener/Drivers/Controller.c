@@ -107,7 +107,7 @@ void FSM_start(void)
 					if(Sample_Coil_Current)
 					{
 						Sample_Coil_Current = 0;
-						uint16_t adc_closing_current = ADC_convert(_PC1);
+						uint16_t adc_closing_current = ADC_convert(_PC0);
 						Door_State = get_doorstate(adc_closing_current); // decide if the door is open or not
 							
 						if (Door_State==Door_Closed)
@@ -242,7 +242,7 @@ int get_doorstate(uint16_t adc)
 {
 	float value = (adc*5.0)/ADC_REF;
 	
-	value = value/SHUNT; // calculate current
+	value = (value/DOOR_SENSING_CIRCUIT_GAIN)/SHUNT; // calculate current
 	
 	if (value >= DOOR_THRESHOLD_CURRENT)//still placeholders for actual values
 	{	
