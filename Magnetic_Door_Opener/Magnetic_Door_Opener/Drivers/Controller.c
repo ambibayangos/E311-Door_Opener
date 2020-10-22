@@ -34,17 +34,16 @@ void FSM_start(void)
 
 	
 	while(1)
-	{	
-		UART_transmit_number(Current_FSM_state);
-		UART_transmit_string("\n\r");
-		UART_transmit_string("\n\r");
-	
+	{		
 		switch(Current_FSM_state)
 		{
 			case Initialisation_State:
-					
+				
+				
 				if(!half_Duty_Produced)
 				{	
+					UART_transmit_string("Current state: Initialization_state");
+					UART_transmit_string("\n\r");
 					 // initialize duty cycle to 50% for sensing
 					duty[0] = 0.5;duty[1] = 0.5;duty[2] = 0.5;duty[3] = 0.5;
 					duty[4] = 0.5;duty[5] = 0.5;duty[6] = 0.5;duty[7] = 0.5;duty[8] = 0.5;
@@ -62,13 +61,17 @@ void FSM_start(void)
 					if (Door_State==Door_Closed)
 					{	
 						// Move to "WaitTouch_State" state 				
-						Current_FSM_state= 	WaitTouch_State;					
+						Current_FSM_state= 	WaitTouch_State;
+						// turn off green led to indicate door closed
+						PORTB &= ~(1<<DDB7);					
 					}
 					
 					else if (Door_State==Door_Opened)
 					{	
 						// Move to "Generate_Closing_Force_State" state
 						Current_FSM_state = Generate_Closing_Force_State;
+						// turn on green led to indicate door open
+						PORTB |= (1<<DDB7);	
 					}
 
 			  }
@@ -79,7 +82,9 @@ void FSM_start(void)
 					
 					
 					if(!closing_force_routine_initialized)
-					{
+					{	
+						UART_transmit_string("Current state: Generate_Closing_Force_State");
+						UART_transmit_string("\n\r");
 						STOP_8bit_COUNTER2(); // stops the coil pwm generator
 						Coil_Current_Polarity_State = Closing_Force_Current;
 						//initialize duty cycle to 50% for sensing
@@ -116,6 +121,8 @@ void FSM_start(void)
 							Current_FSM_state= 	WaitTouch_State;
 							// Enables the "WaitTouch_State" to re-initialize
 							wait_touch_routine_initialized = 0;
+							// turn off green led to indicate door closed
+							PORTB &= ~(1<<DDB7);	
 						}
 							
 					}
@@ -129,6 +136,8 @@ void FSM_start(void)
 				
 				if(!wait_touch_routine_initialized)
 				{	
+					UART_transmit_string("Current state: WaitTouch_State");
+					UART_transmit_string("\n\r");
 					// stop pmw on the coil
 					STOP_8bit_COUNTER2();
 					// Initialize 16bit timer to fast pwm mode
@@ -190,6 +199,8 @@ void FSM_start(void)
 								
 				if(!opening_force_routine_initialized)
 				{	
+					UART_transmit_string("Current state: Generate_Opening_Force_State");
+					UART_transmit_string("\n\r");
 					// turn off the fast pwm generator (wait touch pwm)
 					STOP_16bit_COUNTER1(); 
 					// Configures the 16bit timer to be a 60 sec timer
@@ -219,6 +230,8 @@ void FSM_start(void)
 						Current_FSM_state = Generate_Closing_Force_State;
 						// Enables the "Generate_Closing_Force_State" state to re-initialize
 						closing_force_routine_initialized = 0;
+						// turn on green led to indicate door open
+						PORTB |= (1<<DDB7);	
 					}
 					
 				}
