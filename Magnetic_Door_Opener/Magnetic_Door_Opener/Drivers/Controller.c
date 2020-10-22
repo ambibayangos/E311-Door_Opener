@@ -12,14 +12,19 @@
 #include "ADC.h"
 #include "UART.h"
 #include "ADC.h"
+
+
+int duty_cycle = 0;
+
 /*
  *  This function represents the FSM that controls the current driver 
  *  as
  */ 
 void FSM_start(void)
 {	
+	Current_FSM_state = Initialisation_State; // Initialize current state to Initialization state]
+	/*
 	uint8_t half_Duty_Produced = 0;
-	Current_FSM_state = Initialisation_State; // Initialize current state to Initialization state
 	Door_State = Uknown; // Door state is unknown when programme just started
 	Sample_Coil_Current = 0;
 	Sample_touch_circuit = 0;
@@ -30,54 +35,50 @@ void FSM_start(void)
 	int sample_touch_flag = 0;
 	int first_time_touch_value = 0;
 	int second_time_touch_value = 0;
-
-
+	float duty_cycle = 0.5; // initialize duty cycle to 50%
+	*/
+	
+	uint8_t half_Duty_Produced = 0;
 	
 	while(1)
 	{	
-		UART_transmit_number(Current_FSM_state);
-		UART_transmit_string("\n\r");
-		UART_transmit_string("\n\r");
+		//UART_transmit_number(Current_FSM_state);
+		//UART_transmit_string("\n\r");
+		//UART_transmit_string("\n\r");
 	
 		switch(Current_FSM_state)
 		{
 			case Initialisation_State:
-					
-				if(!half_Duty_Produced)
-				{	
-					 // initialize duty cycle to 50% for sensing
-					duty[0] = 0.5;duty[1] = 0.5;duty[2] = 0.5;duty[3] = 0.5;
-					duty[4] = 0.5;duty[5] = 0.5;duty[6] = 0.5;duty[7] = 0.5;duty[8] = 0.5;
-					Coil_Current_Polarity_State = Opening_Force_Current; // generate a opening force
-					START_8bit_COUNTER2(); // STARTS THE PWM
-					half_Duty_Produced = 1;
-				}
 				
-				if(Sample_Coil_Current)  // sample coil at 50% duty cycle
-				{	
-					Sample_Coil_Current = 0;
-					uint16_t adc = ADC_convert(_PC0);
-					Door_State = get_doorstate(adc); // decide if the door is open or not
-					
+					if(!half_Duty_Produced)
+					{
+						
+						// set duty cycle to 50%
+						OCR1A = 50*155/100;	
+						// start generating 50% pwm
+						start_opening_current();
+						// only allaw state "Initialisation_State" to be initilized once
+						half_Duty_Produced = 1;
+					}
+				
 					if (Door_State==Door_Closed)
 					{	
-						// Move to "WaitTouch_State" state 				
-						Current_FSM_state= 	WaitTouch_State;					
-					}
-					
+						UART_transmit_number(3);
+						// Move to "WaitTouch_State" state
+						Current_FSM_state= 	WaitTouch_State;
+					} 
 					else if (Door_State==Door_Opened)
-					{	
-						// Move to "Generate_Closing_Force_State" state
-						Current_FSM_state = Generate_Closing_Force_State;
-					}
-
-			  }
+					 {	
+						 UART_transmit_number(2);
+						 // Move to "Generate_Closing_Force_State" state
+						 Current_FSM_state = Generate_Closing_Force_State;
+					 }
 				
 				break;
 			
 			case Generate_Closing_Force_State:
 					
-					
+					/*
 					if(!closing_force_routine_initialized)
 					{
 						STOP_8bit_COUNTER2(); // stops the coil pwm generator
@@ -119,6 +120,7 @@ void FSM_start(void)
 						}
 							
 					}
+					*/
 							
 					
 			
@@ -126,7 +128,8 @@ void FSM_start(void)
 				
 			case WaitTouch_State:
 				
-				
+				UART_transmit_number(7);
+				/*
 				if(!wait_touch_routine_initialized)
 				{	
 					// stop pmw on the coil
@@ -181,13 +184,16 @@ void FSM_start(void)
 						
 						sample_touch_flag = 1;
 					}
+					
 	
 				}
+				*/
 				
 				break;	
 				
 			case Generate_Opening_Force_State:
-								
+			
+				/*			
 				if(!opening_force_routine_initialized)
 				{	
 					// turn off the fast pwm generator (wait touch pwm)
@@ -222,11 +228,10 @@ void FSM_start(void)
 					}
 					
 				}
+				*/
 			
 				break;
-			default:
-				Current_FSM_state = Initialisation_State;
-				break;
+			
 		}
 		
 				
@@ -234,23 +239,4 @@ void FSM_start(void)
 	
 }
 
-/*
- *  this function gets door state
- *  it returns 1 if door is open and return 0 if door is closed 
- */ 
-int get_doorstate(uint16_t adc)
-{
-	float value = (adc*5.0)/ADC_REF;
-	
-	value = value/SHUNT; // calculate current
-	
-	if (value >= DOOR_THRESHOLD_CURRENT)//still placeholders for actual values
-	{	
-		return Door_Opened; 
-	}
-	else
-	{	
-		return Door_Closed; 
-	}
 
-}

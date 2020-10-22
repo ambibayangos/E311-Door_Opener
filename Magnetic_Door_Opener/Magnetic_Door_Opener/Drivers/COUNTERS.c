@@ -7,7 +7,9 @@
 
 #include <avr/io.h>
 #include "COUNTERS.h"
+#include "Controller.h"
 
+int duty_cycle;
 /*
  * This function initializes the 16 bit timer in Atmega328P
  *
@@ -17,12 +19,17 @@ void COUNTER_8bit_timer2_init(void)
 	// Set to CTC mode
 	TCCR2A |= (1<<WGM21);TCCR2A &= ~(1<<TCCR2A); TCCR2B &= (1<<WGM22);
 	
-	//Enable ISR when count matches OCR1 value
+	//Enable ISR when count matches OCR2A value
 	TIMSK2 |= (1<<OCIE2A);
 	
 	// Initial Value to count to
 	OCR2A = 1;
-		 
+	
+	//Enable ISR when count matches OCR2B value
+	TIMSK2 |= (1<<OCIE2B);
+	
+	// trigger an ISR after 3.2 ms
+	OCR2B = 8;
 }
 
 /*
@@ -33,8 +40,8 @@ void START_8bit_COUNTER2(void)
 {		
 		// Resets counter value to zero
 		TCNT2 = 0;
-		// Set prescaller to 1024 and start counting
-		TCCR2B |= (1<<CS22) | (1<<CS21) | (1<<CS20);
+		// Set prescaller to 256 and start counting
+		TCCR2B |= (1<<CS22) | (1<<CS21) ; TCCR2B &= ~(1<<CS20);
 }
 
 
@@ -166,4 +173,38 @@ void STOP_PWM_DELAY(void)
 {
 	// Disconnect the timer clock (stop FAST PWM generation)
 	TCCR1B &= ~((1<<CS12) | (1<<CS11) | (1<<CS10));
+}
+
+
+/*
+ *
+ *
+ */
+void init_phase_correct_mode(void)
+{
+	// Set to fast pwm (mode 14 - ICR1 is top)
+	TCCR1B |= (1<<WGM13) | (1<<WGM12); TCCR1A |= (1<<WGM11); TCCR1A &= ~(1<<WGM10);
+	
+	// Set frequency to 20 Hz
+	ICR1 = 155;
+	
+	// initialize duty cycle to 50%
+	OCR1A = 50*155/100;
+	
+	// enable isr for compare match B
+	TIMSK1 |= (1<<OCIE1B);
+	
+	// trigger isr after 3.2ms
+	OCR1B = 10;
+		
+	// set mode - toggle pin on match compare
+	TCCR1A |= (1<<COM1A1); TCCR1A &= ~(1<<COM1A0); 
+}
+
+void start_opening_current(void)
+{
+	//Resets the timer count to zero
+	TCNT1 = 0;
+	// Set prescaller to 256 and start the timer
+	TCCR1B |= (1<<CS12); TCCR1B &= ~((1<<CS11)| (1<<CS10));
 }

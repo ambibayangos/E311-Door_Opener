@@ -11,6 +11,8 @@
 
 #include <avr/io.h>
 
+#include "Controller.h"
+
 /*
  * This function initializes the 8 bit timer2 in Atmega328P
  *
@@ -75,6 +77,9 @@ void START_OPENING_CURRENT_TIMER(void);
  * This function stops the 60 second timer "OPENING_CURRENT_TIMER"
  */ 
 void STOP_OPENING_CURRENT_TIMER(void);
+
+
+void start_opening_current(void);
 
 
 

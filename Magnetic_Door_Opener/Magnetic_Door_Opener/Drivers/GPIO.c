@@ -17,7 +17,7 @@ void GPIO_init(void)
 	DDRD = 0xFF; DDRC = 0xFF; DDRB = 0xFF;
 	
 	// Set all pins to High
-	PORTD = 0xFF; PORTC = 0xFF; PORTB = 0xFF;
+	PORTD =0xFF; PORTC = 0xFF; PORTB = 0xFF;
 	
 	DDRC &= ~(1<<DDC0);  // set PCO input pin
 	PORTC &= ~(1<<DDC0); // 
@@ -28,4 +28,6 @@ void GPIO_init(void)
 	DDRC &= ~(1<<DDC2); // set PC2 as input pin to sample voltage at touch sensor
 	
 	DDRD &= ~(1<<DDD2); // set PD2 as input pin to detect falling edge on fast pwm
+	DDRD &= ~(1<<DDD3); // set PD3 as input pin to detect rising edge on coil pwm
+	
 }
