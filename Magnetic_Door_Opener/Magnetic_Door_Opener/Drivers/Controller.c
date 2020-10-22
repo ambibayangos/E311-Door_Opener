@@ -35,51 +35,52 @@ void FSM_start(void)
 	
 	while(1)
 	{	
-		UART_transmit_number(Current_FSM_state);
-		UART_transmit_string("\n\r");
-		UART_transmit_string("\n\r");
+		//UART_transmit_number(Current_FSM_state);
+		//UART_transmit_string("\n\r");
+		//UART_transmit_string("\n\r");
 	
 		switch(Current_FSM_state)
 		{
 			case Initialisation_State:
-					
+				
+				//UART_transmit_number(55);
 				if(!half_Duty_Produced)
 				{	
+					UART_transmit_number(66);
 					 // initialize duty cycle to 50% for sensing
-					duty[0] = 0.5;duty[1] = 0.5;duty[2] = 0.5;duty[3] = 0.5;
-					duty[4] = 0.5;duty[5] = 0.5;duty[6] = 0.5;duty[7] = 0.5;duty[8] = 0.5;
-					Coil_Current_Polarity_State = Opening_Force_Current; // generate a opening force
-					START_8bit_COUNTER2(); // STARTS THE PWM
+					OCR1A = 50*155/100;
+					START_OPENING_CURRENT();
+					//Coil_Current_Polarity_State = Opening_Force_Current; // generate a opening force
+					//START_8bit_COUNTER2(); // STARTS THE PWM
 					half_Duty_Produced = 1;
 				}
 				
-				if(Sample_Coil_Current)  // sample coil at 50% duty cycle
-				{	
-					Sample_Coil_Current = 0;
-					uint16_t adc = ADC_convert(_PC0);
-					Door_State = get_doorstate(adc); // decide if the door is open or not
-					
-					if (Door_State==Door_Closed)
-					{	
-						// Move to "WaitTouch_State" state 				
-						Current_FSM_state= 	WaitTouch_State;					
-					}
-					
-					else if (Door_State==Door_Opened)
-					{	
-						// Move to "Generate_Closing_Force_State" state
-						Current_FSM_state = Generate_Closing_Force_State;
-					}
-
-			  }
+				if (Door_State==Door_Closed)
+				{
+					// Move to "WaitTouch_State" state
+					Current_FSM_state= 	WaitTouch_State;
+					// singal the door closed LED
+					PORTC &= ~(1<<DDD3);
+				}
 				
+				else if (Door_State==Door_Opened)
+				{
+					// Move to "Generate_Closing_Force_State" state
+					Current_FSM_state = Generate_Closing_Force_State;
+					// singal the door closed LED
+					PORTC |= (1<<DDD3);
+				}
+						
 				break;
 			
 			case Generate_Closing_Force_State:
 					
 					
 					if(!closing_force_routine_initialized)
-					{
+					{	
+						
+						// configure pwm for closing force
+						TCCR1A |= (1<<COM1B1);
 						STOP_8bit_COUNTER2(); // stops the coil pwm generator
 						Coil_Current_Polarity_State = Closing_Force_Current;
 						//initialize duty cycle to 50% for sensing
@@ -111,7 +112,7 @@ void FSM_start(void)
 						Door_State = get_doorstate(adc_closing_current); // decide if the door is open or not
 							
 						if (Door_State==Door_Closed)
-						{
+						{	
 							// Move to "WaitTouch_State" state
 							Current_FSM_state= 	WaitTouch_State;
 							// Enables the "WaitTouch_State" to re-initialize
@@ -129,13 +130,10 @@ void FSM_start(void)
 				
 				if(!wait_touch_routine_initialized)
 				{	
-					// stop pmw on the coil
-					STOP_8bit_COUNTER2();
-					// Initialize 16bit timer to fast pwm mode
-					COUNTER_16bit_timer1_init();
-					// start the 1KHz pwm generation
-					START_16bit_COUNTER1();
-					// Intialize "WaitTouch_State" only once
+					// stop coil pwm
+					STOP_OPENING_CURRENT();
+					// start a 1Khz PWM for capacitive touch
+					START_TOUCH_PWM();
 					wait_touch_routine_initialized = 1;
 				}
 				
@@ -234,23 +232,3 @@ void FSM_start(void)
 	
 }
 
-/*
- *  this function gets door state
- *  it returns 1 if door is open and return 0 if door is closed 
- */ 
-int get_doorstate(uint16_t adc)
-{
-	float value = (adc*5.0)/ADC_REF;
-	
-	value = value/SHUNT; // calculate current
-	
-	if (value >= DOOR_THRESHOLD_CURRENT)//still placeholders for actual values
-	{	
-		return Door_Opened; 
-	}
-	else
-	{	
-		return Door_Closed; 
-	}
-
-}

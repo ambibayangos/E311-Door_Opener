@@ -22,7 +22,7 @@ int duty_index = 0; // index of the pwm array(allow changing pwm duty cycle)
 int opening_current_timer_count = 0; // counts the number of period the opening current is generating pwm
 int current_duty_cycle_is_50 = 0;
 int fast_pwm_period_count = 0;
-
+volatile int adc = 0;
 
 /*
  * This ISR timer creates a PWM and starts the timer(3.2ms) used to measure coil current
@@ -118,18 +118,53 @@ ISR(TIMER1_COMPA_vect)
 }
 
 
+
+ISR(TIMER1_COMPB_vect)
+{
+	adc = ADC_convert(_PC0);
+	UART_transmit_number(adc);
+	UART_transmit_string("\n\r");
+	
+	Door_State = Door_Opened;
+}
+
+/*
+ *  this function gets door state
+ *  it returns 1 if door is open and return 0 if door is closed 
+ */ 
+int get_doorstate(uint16_t adc)
+{
+	float coil_current = (adc*5.0)/ADC_REF;
+	
+	coil_current = (coil_current/COIL_SENSOR_CIRCUIT_GAIN)/SHUNT; // calculate current
+	
+	if (coil_current >= DOOR_THRESHOLD_CURRENT)//still placeholders for actual values
+	{	
+		Door_State = Door_Opened; 
+	}
+	else
+	{	
+		Door_State = Door_Closed; 
+	}
+
+}
+
+
 int main(void)
 {	
 	// Initializes the drivers
 	ADC_init();
-	COUNTER_8bit_timer2_init();
-	COUNTER_8bit_timer0_init();
-	COUNTER_16bit_timer1_init();
+	PWM_COIL_GENERATOR_INIT();
+	TOUCH_PWM_INIT();
+	//COUNTER_8bit_timer2_init();
+	//COUNTER_8bit_timer0_init();
+	//COUNTER_16bit_timer1_init();
+	//INIT_EXTERNAL_ISR();
 	GPIO_init();
 	UART_init(MYUBRR);
-	INIT_EXTERNAL_ISR();
 	sei(); // enable global interupt 
 	
+
 	// Start and loop the programme
 	FSM_start();
 }

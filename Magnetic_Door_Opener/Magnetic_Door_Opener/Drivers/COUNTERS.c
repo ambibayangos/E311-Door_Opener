@@ -167,3 +167,61 @@ void STOP_PWM_DELAY(void)
 	// Disconnect the timer clock (stop FAST PWM generation)
 	TCCR1B &= ~((1<<CS12) | (1<<CS11) | (1<<CS10));
 }
+
+
+void PWM_COIL_GENERATOR_INIT(void)
+{
+	// Set to fast pwm (mode 14 - ICR1 is top)
+	TCCR1B |= (1<<WGM13) | (1<<WGM12); TCCR1A |= (1<<WGM11); TCCR1A &= ~(1<<WGM10);
+	
+	// Set frequency to 20 Hz
+	ICR1 = 155;
+	
+	// initialize duty cycle to 50%
+	OCR1A = 50*155/100;
+	
+	// enable isr for compare match B
+	TIMSK1 |= (1<<OCIE1B);
+	
+	// trigger isr after 3.2ms
+	OCR1B = 10;
+	
+	// set mode - toggle pin on match compare
+	TCCR1A |= (1<<COM1A1); TCCR1A &= ~(1<<COM1A0);
+}
+
+void START_OPENING_CURRENT(void)
+{
+	//Resets the timer count to zero
+	TCNT1 = 0;
+	// Set prescaller to 256 and start the timer
+	TCCR1B |= (1<<CS12); TCCR1B &= ~((1<<CS11)| (1<<CS10));
+}
+
+
+
+void STOP_OPENING_CURRENT(void)
+{
+	// Set prescaller to 256 and start the timer
+	TCCR1B &= ~((1<<CS12) | (1<<CS11)| (1<<CS10));
+}
+
+
+void TOUCH_PWM_INIT()
+{	
+	// set ctc mode
+	TCCR0B &= ~(1<<WGM02); TCCR0A |= (1<<WGM01); TCCR0A &= ~(1<<WGM00);
+	
+	//set 1kHz as frequency
+	OCR0A = 6;
+	
+	//set toggle mode to get 50% duty cycle
+	TCCR0A |= (1<<COM0A0); TCCR0A &= ~(1<<COM0A1);
+}
+
+void START_TOUCH_PWM(void)
+{	
+	TCNT0 = 0;
+	// set precaller to 64
+	TCCR0B |= (1<<CS00) | (1<<CS01); TCCR0B &= ~(1<<CS02);
+}

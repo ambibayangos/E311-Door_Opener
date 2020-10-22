@@ -16,5 +16,5 @@ void INIT_EXTERNAL_ISR(void)
 	// Enable external isr on pin PD2
 	EIMSK |= (1<<INT0);
 	// trigger ISR on falling edge
-	EICRA |= (1<<ISC01); //EICRA &= ~(1<<ISC00);
+	EICRA |= (1<<ISC01);
 }

@@ -77,5 +77,9 @@ void START_OPENING_CURRENT_TIMER(void);
 void STOP_OPENING_CURRENT_TIMER(void);
 
 
+void PWM_COIL_GENERATOR_INIT(void);
+
+void START_OPENING_CURRENT(void);
+
 
 #endif /* COUNTERS_H_ */
